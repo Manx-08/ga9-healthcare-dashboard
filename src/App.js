@@ -160,25 +160,17 @@ export default function App() {
         : "normal",
     [latest, profile]
   );
-  const tempState = useMemo(
-    () =>
-      latest && profile
-        ? classifyVital(latest.temperature_c, profile.baseline_temp, 0.6)
-        : "normal",
-    [latest, profile]
-  );
 
-  const overallState = [hrState, spo2State, tempState].includes("alert")
+  const overallState = [hrState, spo2State].includes("alert")
     ? "alert"
-    : [hrState, spo2State, tempState].includes("watch")
+    : [hrState, spo2State].includes("watch")
     ? "watch"
     : "normal";
 
   const chartData = readings.map((r) => ({
     time: formatTime(r.timestamp),
     hr: r.heart_rate_bpm,
-    spo2: r.spo2_percent,
-    temp: r.temperature_c
+    spo2: r.spo2_percent
   }));
 
   return (
@@ -228,13 +220,6 @@ export default function App() {
           state={spo2State}
           sublabel={profile ? `Baseline ${profile.baseline_spo2}%` : ""}
         />
-        <VitalCard
-          label="Temperature"
-          value={latest ? latest.temperature_c.toFixed(1) : "—"}
-          unit="°C"
-          state={tempState}
-          sublabel={profile ? `Baseline ${profile.baseline_temp}°C` : ""}
-        />
       </section>
 
       <section className="panel">
@@ -267,13 +252,11 @@ export default function App() {
             )}
             <Line type="monotone" dataKey="hr" stroke="#E5484D" strokeWidth={2} dot={false} name="Heart rate (bpm)" />
             <Line type="monotone" dataKey="spo2" stroke="#3DDC97" strokeWidth={2} dot={false} name="SpO2 (%)" />
-            <Line type="monotone" dataKey="temp" stroke="#F0A93C" strokeWidth={2} dot={false} name="Temp (°C)" />
           </LineChart>
         </ResponsiveContainer>
         <div className="chart-legend">
           <span className="chart-legend__item"><i style={{ background: "#E5484D" }} /> Heart rate</span>
           <span className="chart-legend__item"><i style={{ background: "#3DDC97" }} /> SpO₂</span>
-          <span className="chart-legend__item"><i style={{ background: "#F0A93C" }} /> Temperature</span>
         </div>
       </section>
 
